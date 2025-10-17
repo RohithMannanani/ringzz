@@ -17,6 +17,16 @@ class Cart {
         $cart = &$_SESSION['cart'];
         if (isset($cart[$productId])) unset($cart[$productId]);
     }
+
+    public function removeOne($productId){
+        $cart = &$_SESSION['cart'];
+        if (isset($cart[$productId])) {
+            $cart[$productId]--;
+            if ($cart[$productId] <= 0) {
+                unset($cart[$productId]);
+            }
+        }
+    }
     public function getItems(){
         $cart = $_SESSION['cart'] ?? [];
         $items = [];

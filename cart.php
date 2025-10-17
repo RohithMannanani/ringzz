@@ -53,13 +53,33 @@ function updateCartCount(){
     }, 'json');
 }
 
-function updateCartDisplay(data){
-    // update quantity, subtotal, total
-    data.items.forEach(item=>{
-        let $item = $('.item[data-id="'+item.id+'"]');
-        $item.find('.qty').text(item.qty);
-        $item.find('.subtotal').text(item.subtotal.toFixed(2));
-    });
+function updateCartDisplay(data) {
+    const itemsContainer = $('#items');
+    itemsContainer.empty(); // Clear the current cart display
+
+    if (data.items && data.items.length > 0) {
+        data.items.forEach(item => {
+            const itemHtml = `
+                <div class="item" data-id="${item.id}">
+                    <img src="${item.image ? './classes/' + item.image : 'uploads/placeholder.jpg'}" alt="${item.name}">
+                    <div style="flex:1;">
+                        <strong>${item.name}</strong><br>
+                        ₹ ${parseFloat(item.price).toFixed(2)} |
+                        Subtotal: ₹ <span class="subtotal">${item.subtotal.toFixed(2)}</span><br>
+                        Qty:
+                        <button class="qty-btn decrease">-</button>
+                        <span class="qty">${item.qty}</span>
+                        <button class="qty-btn increase">+</button>
+                    </div>
+                    <button class="btn btn-danger remove">Remove</button>
+                </div>
+            `;
+            itemsContainer.append(itemHtml);
+        });
+    } else {
+        itemsContainer.html('<p>Your cart is empty.</p>');
+    }
+
     $('#total-rupees').text(data.total.toFixed(2));
     updateCartCount();
 }
@@ -86,10 +106,6 @@ $(document).on('click', '.decrease', function(){
         if(res.success){
             $.get('api/cart.php?action=get', function(data){
                 updateCartDisplay(data);
-                // remove if qty 0
-                $('.item').each(function(){
-                    if($(this).find('.qty').text()=='0') $(this).remove();
-                });
             }, 'json');
             updateCartCount();
         }

@@ -46,6 +46,12 @@ switch($action) {
         echo json_encode(['success' => true]);
         break;
 
+    case 'remove_one':
+        $pid = intval($_POST['product_id']);
+        $cart->removeOne($pid);
+        echo json_encode(['success' => true]);
+        break;
+
     default:
         echo json_encode(['error' => 'Invalid action']);
         break;
